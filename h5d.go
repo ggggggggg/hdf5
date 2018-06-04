@@ -66,6 +66,16 @@ func (s *Dataset) Space() *Dataspace {
 	return nil
 }
 
+// Set new dimensions, calls H5Dset_extent
+func (s *Dataset) SetExtent(newDims []uint) error {
+	var c_newDims *_Ctype_ulonglong
+	if newDims != nil {
+		c_newDims = (*C.hsize_t)(unsafe.Pointer(&newDims))
+	}
+	err := h5err(C.H5Dset_extent(s.id, c_newDims))
+	return err
+}
+
 // ReadSubset reads a subset of raw data from a dataset into a buffer.
 func (s *Dataset) ReadSubset(data interface{}, memspace, filespace *Dataspace) error {
 	dtype, err := s.Datatype()

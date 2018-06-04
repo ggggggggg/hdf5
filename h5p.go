@@ -9,11 +9,13 @@ package hdf5
 // #include <string.h>
 // inline static
 // hid_t _go_hdf5_H5P_DEFAULT() { return H5P_DEFAULT; }
+// hid_t _go_hdf5_H5P_DATASET_CREATE() { return H5P_DATASET_CREATE; }
 import "C"
 
 import (
 	"fmt"
 	"runtime"
+	"unsafe"
 )
 
 type PropType C.hid_t
@@ -21,6 +23,10 @@ type PropType C.hid_t
 type PropList struct {
 	Identifier
 }
+
+var (
+	H5P_DATASET_CREATE PropType = PropType(C._go_hdf5_H5P_DATASET_CREATE())
+)
 
 var (
 	P_DEFAULT *PropList = newPropList(C._go_hdf5_H5P_DEFAULT())
@@ -45,6 +51,17 @@ func NewPropList(cls_id PropType) (*PropList, error) {
 		return nil, err
 	}
 	return newPropList(hid), nil
+}
+
+func (p *PropList) SetChunk(chunkDims []uint) error {
+	rank := len(chunkDims)
+	var c_chunkDims *_Ctype_ulonglong
+	if chunkDims != nil {
+		c_chunkDims = (*C.hsize_t)(unsafe.Pointer(&chunkDims))
+	}
+	c_rank := (_Ctype_int)(rank)
+	err := h5err(C.H5Pset_chunk(p.id, c_rank, c_chunkDims))
+	return err
 }
 
 // Close terminates access to a PropList.

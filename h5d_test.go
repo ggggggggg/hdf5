@@ -10,6 +10,43 @@ import (
 	"testing"
 )
 
+func TestExtend(t *testing.T) {
+	// create a file with a single 5x20 dataset
+	f, err := CreateFile(fname, F_ACC_TRUNC)
+	if err != nil {
+		t.Fatalf("CreateFile failed: %s", err)
+	}
+	defer f.Close()
+
+	var data [100]uint16
+	for i := range data {
+		data[i] = uint16(i)
+	}
+
+	dims := []uint{20, 5}
+	maxDims := []uint{40, 5}
+	dspace, err := CreateSimpleDataspace(dims, maxDims)
+	if err != nil {
+		t.Fatal(err)
+	}
+	propList, err := NewPropList(H5P_DATASET_CREATE)
+	propList.SetChunk([]uint{10, 5})
+	dset, err := f.CreateDatasetWith("dset", T_NATIVE_USHORT, dspace, propList)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = dset.SetExtent(maxDims)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = dset.Write(&data[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func createDataset1(t *testing.T) error {
 	// create a file with a single 5x20 dataset
 	f, err := CreateFile(fname, F_ACC_TRUNC)
