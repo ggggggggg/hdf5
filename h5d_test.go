@@ -30,7 +30,13 @@ func TestExtend(t *testing.T) {
 		t.Fatal(err)
 	}
 	propList, err := NewPropList(H5P_DATASET_CREATE)
-	propList.SetChunk([]uint{10, 5})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = propList.SetChunk([]uint{10, 5})
+	if err != nil {
+		t.Fatal(err)
+	}
 	dset, err := f.CreateDatasetWith("dset", T_NATIVE_USHORT, dspace, propList)
 	if err != nil {
 		t.Fatal(err)

@@ -60,6 +60,7 @@ func (p *PropList) SetChunk(chunkDims []uint) error {
 		c_chunkDims = (*C.hsize_t)(unsafe.Pointer(&chunkDims))
 	}
 	c_rank := (_Ctype_int)(rank)
+	fmt.Printf("rank %v, c_rank %v", rank, c_rank)
 	err := h5err(C.H5Pset_chunk(p.id, c_rank, c_chunkDims))
 	return err
 }

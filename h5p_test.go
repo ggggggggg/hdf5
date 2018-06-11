@@ -8,9 +8,12 @@ import (
 	"testing"
 )
 
-func TestProps(t *testing.T) {
+func TestPropList(t *testing.T) {
 	propList, err := NewPropList(H5P_DATASET_CREATE)
-	propList.SetChunk([]uint{100, 100})
+	if err != nil {
+		t.Error(err)
+	}
+	err = propList.SetChunk([]uint{100, 100})
 	if err != nil {
 		t.Error(err)
 	}
